@@ -7,9 +7,9 @@ import type { AccountDetail } from "@/lib/queries";
 const CATEGORIES = ["전체", "매출", "매출원가", "노무비", "판관비", "섬유자산", "자산"];
 const MONTHS = [1, 2, 3, 4, 5];
 
-type Props = { data: AccountDetail[] };
+type Props = { data: AccountDetail[]; selectedMonth?: number | null };
 
-export function AccountTable({ data }: Props) {
+export function AccountTable({ data, selectedMonth }: Props) {
   const [category, setCategory] = useState("전체");
   const [search, setSearch] = useState("");
 
@@ -30,7 +30,6 @@ export function AccountTable({ data }: Props) {
     });
   }, [data, category, search]);
 
-  // 월별 소계
   const subtotals = useMemo(() => {
     const totals: Record<number, number> = {};
     let grandTotal = 0;
@@ -40,6 +39,22 @@ export function AccountTable({ data }: Props) {
     }
     return { totals, grandTotal };
   }, [filtered]);
+
+  function colCls(m: number) {
+    return selectedMonth === m
+      ? "bg-blue-50 text-blue-900 font-semibold"
+      : "text-gray-700";
+  }
+  function thCls(m: number) {
+    return selectedMonth === m
+      ? "px-3 py-2 text-right font-semibold w-24 bg-blue-100 text-blue-800"
+      : "px-3 py-2 text-right font-medium w-24";
+  }
+  function footCls(m: number) {
+    return selectedMonth === m
+      ? "px-3 py-2 text-right tabular-nums bg-blue-800"
+      : "px-3 py-2 text-right tabular-nums";
+  }
 
   return (
     <div>
@@ -80,7 +95,7 @@ export function AccountTable({ data }: Props) {
               <th className="px-3 py-2 text-left font-medium w-28">거래처</th>
               <th className="px-3 py-2 text-left font-medium">상세내역</th>
               {MONTHS.map((m) => (
-                <th key={m} className="px-3 py-2 text-right font-medium w-24">{m}월</th>
+                <th key={m} className={thCls(m)}>{m}월</th>
               ))}
               <th className="px-3 py-2 text-right font-medium w-28 bg-gray-100">합계</th>
             </tr>
@@ -94,7 +109,7 @@ export function AccountTable({ data }: Props) {
                 <td className="px-3 py-2 text-gray-600 text-xs">{row.counterparty}</td>
                 <td className="px-3 py-2 text-gray-800">{row.detail}</td>
                 {MONTHS.map((m) => (
-                  <td key={m} className="px-3 py-2 text-right tabular-nums text-gray-700">
+                  <td key={m} className={`px-3 py-2 text-right tabular-nums ${colCls(m)}`}>
                     {row.months[m] !== undefined ? fmtKRW(row.months[m]) : "-"}
                   </td>
                 ))}
@@ -108,7 +123,7 @@ export function AccountTable({ data }: Props) {
             <tr className="bg-slate-800 text-white font-semibold text-xs">
               <td colSpan={5} className="px-3 py-2">소계 ({filtered.length}건)</td>
               {MONTHS.map((m) => (
-                <td key={m} className="px-3 py-2 text-right tabular-nums">
+                <td key={m} className={footCls(m)}>
                   {fmtKRW(subtotals.totals[m] ?? 0)}
                 </td>
               ))}

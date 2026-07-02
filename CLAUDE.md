@@ -47,6 +47,7 @@ Copy `.env.local.example` to `.env.local` before running locally.
 - DB stores raw KRW (`numeric(18,4)`); `fmtKRW()` in `src/lib/format.ts` divides by 1 000 for 천원 display
 - Chart data is pre-divided by 1 000 (천원); Y-axis formatter divides by another 1 000 to label as "백만원 (M)"
 - `revenue_ratio` is the raw decimal (0.04 = 4%)
+- **영업이익 계산:** `매출 - (노무비 + 판관비)` — 매출원가 미차감. 엑셀 R189 수식 `=R27-(R79+R174+R187)` 기준. 엑셀에서 노무비(R79)·경비(R174)는 별도 섹션이나 DB에서는 모두 `major_category = '노무비'`로 통합됨.
 
 ## Excel sheet → DB table mapping
 

@@ -52,7 +52,8 @@ export async function getPLSummary(year: number): Promise<PLSummaryRow[]> {
   }
 
   for (const m of monthMap.values()) {
-    m.totalCost = m.costOfSales + m.laborCost + m.sgaExpense;
+    // 엑셀 R189 수식 기준: =R27-(R79+R174+R187) → 매출원가 미차감
+    m.totalCost = m.laborCost + m.sgaExpense;
     m.grossProfit = m.revenue - m.costOfSales;
     m.operatingProfit = m.revenue - m.totalCost;
     m.operatingMargin = m.revenue > 0 ? (m.operatingProfit / m.revenue) * 100 : 0;

@@ -2,7 +2,7 @@
 
 import {
   ComposedChart, Bar, Line, XAxis, YAxis,
-  CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine,
+  CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, ReferenceArea,
 } from "recharts";
 
 export type RatioChartData = {
@@ -32,7 +32,7 @@ function TooltipContent({ active, payload, label }: {
   );
 }
 
-export function RevenueRatioChart({ data }: { data: RatioChartData[] }) {
+export function RevenueRatioChart({ data, selectedMonth }: { data: RatioChartData[]; selectedMonth?: number | null }) {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <ComposedChart data={data} margin={{ top: 10, right: 24, left: 12, bottom: 0 }}>
@@ -42,6 +42,14 @@ export function RevenueRatioChart({ data }: { data: RatioChartData[] }) {
         <Tooltip content={<TooltipContent />} />
         <Legend />
         <ReferenceLine y={100} stroke="#94A3B8" strokeDasharray="4 4" />
+        {selectedMonth && (
+          <ReferenceArea
+            x1={`${selectedMonth}월`}
+            x2={`${selectedMonth}월`}
+            fill="#DBEAFE"
+            fillOpacity={0.5}
+          />
+        )}
         <Bar dataKey="매출원가율" stackId="a" fill="#DC2626" />
         <Bar dataKey="노무비율" stackId="a" fill="#EA580C" />
         <Bar dataKey="판관비율" stackId="a" fill="#CA8A04" radius={[3, 3, 0, 0]} />

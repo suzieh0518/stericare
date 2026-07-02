@@ -2,7 +2,7 @@
 
 import {
   ComposedChart, Bar, Line, XAxis, YAxis,
-  CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceArea,
 } from "recharts";
 
 export type PLChartData = {
@@ -43,7 +43,7 @@ function TooltipContent({ active, payload, label }: {
   );
 }
 
-export function PLTrendChart({ data }: { data: PLChartData[] }) {
+export function PLTrendChart({ data, selectedMonth }: { data: PLChartData[]; selectedMonth?: number | null }) {
   return (
     <ResponsiveContainer width="100%" height={340}>
       <ComposedChart data={data} margin={{ top: 10, right: 24, left: 12, bottom: 0 }}>
@@ -56,6 +56,14 @@ export function PLTrendChart({ data }: { data: PLChartData[] }) {
         />
         <Tooltip content={<TooltipContent />} />
         <Legend />
+        {selectedMonth && (
+          <ReferenceArea
+            x1={`${selectedMonth}월`}
+            x2={`${selectedMonth}월`}
+            fill="#DBEAFE"
+            fillOpacity={0.5}
+          />
+        )}
         <Bar dataKey="매출원가" stackId="cost" fill={COLORS.매출원가} />
         <Bar dataKey="노무비" stackId="cost" fill={COLORS.노무비} />
         <Bar dataKey="판관비" stackId="cost" fill={COLORS.판관비} radius={[3, 3, 0, 0]} />
