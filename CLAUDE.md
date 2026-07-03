@@ -47,7 +47,8 @@ Copy `.env.local.example` to `.env.local` before running locally.
 - DB stores raw KRW (`numeric(18,4)`); `fmtKRW()` in `src/lib/format.ts` divides by 1 000 for 천원 display
 - Chart data is pre-divided by 1 000 (천원); Y-axis formatter divides by another 1 000 to label as "백만원 (M)"
 - `revenue_ratio` is the raw decimal (0.04 = 4%)
-- **영업이익 계산:** `매출 - (노무비 + 판관비)` — 매출원가 미차감. 엑셀 R189 수식 `=R27-(R79+R174+R187)` 기준. 엑셀에서 노무비(R79)·경비(R174)는 별도 섹션이나 DB에서는 모두 `major_category = '노무비'`로 통합됨.
+- **영업이익 계산:** `매출 - (노무비 + 판관비)` — 매출원가 미차감. 엑셀 R189 수식 `=R27-(R79+R174+R187)` 기준.
+- **대분류 구조:** 엑셀 C열(raw[2]) 값을 그대로 carry-forward. 실제 대분류는 `매출원가`, `매출`, `노무비`, `판관비`, `자산`, `섬유자산`만 존재. 엑셀 B열에 "경비 합계액" 구분 라벨이 있지만 C열에는 "경비" 대분류가 없으므로 DB에도 없음 — 복리후생비·통신비·소모품비·지급수수료 등은 모두 `노무비`로 분류됨.
 
 ## Excel sheet → DB table mapping
 

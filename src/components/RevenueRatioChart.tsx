@@ -9,7 +9,6 @@ export type RatioChartData = {
   month: string;
   매출원가율: number;
   노무비율: number;
-  경비율: number;
   판관비율: number;
   영업이익률: number;
 };
@@ -53,7 +52,6 @@ export function RevenueRatioChart({ data, selectedMonth }: { data: RatioChartDat
         )}
         <Bar dataKey="매출원가율" stackId="a" fill="#DC2626" />
         <Bar dataKey="노무비율" stackId="a" fill="#EA580C" />
-        <Bar dataKey="경비율" stackId="a" fill="#D97706" />
         <Bar dataKey="판관비율" stackId="a" fill="#CA8A04" radius={[3, 3, 0, 0]} />
         <Line
           dataKey="영업이익률"

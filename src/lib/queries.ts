@@ -7,7 +7,6 @@ export type PLSummaryRow = {
   revenue: number;
   costOfSales: number;
   laborCost: number;
-  gyeongbi: number;   // 경비
   sgaExpense: number;
   fiberAsset: number;
   totalCost: number;
@@ -36,7 +35,7 @@ export async function getPLSummary(year: number): Promise<PLSummaryRow[]> {
       monthMap.set(row.month, {
         month: row.month,
         revenue: 0, costOfSales: 0, laborCost: 0,
-        gyeongbi: 0, sgaExpense: 0, fiberAsset: 0,
+        sgaExpense: 0, fiberAsset: 0,
         totalCost: 0, grossProfit: 0,
         operatingProfit: 0, operatingMargin: 0,
       });
@@ -47,15 +46,13 @@ export async function getPLSummary(year: number): Promise<PLSummaryRow[]> {
       case "매출": m.revenue = v; break;
       case "매출원가": m.costOfSales = v; break;
       case "노무비": m.laborCost = v; break;
-      case "경비": m.gyeongbi = v; break;
       case "판관비": m.sgaExpense = v; break;
       case "섬유자산": m.fiberAsset = v; break;
     }
   }
 
   for (const m of monthMap.values()) {
-    // 엑셀 R189 수식 기준: =R27-(R79+R174+R187) → 노무비+경비+판관비
-    m.totalCost = m.laborCost + m.gyeongbi + m.sgaExpense;
+    m.totalCost = m.laborCost + m.sgaExpense;
     m.grossProfit = m.revenue - m.costOfSales;
     m.operatingProfit = m.revenue - m.totalCost;
     m.operatingMargin = m.revenue > 0 ? (m.operatingProfit / m.revenue) * 100 : 0;
