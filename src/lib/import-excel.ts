@@ -74,6 +74,7 @@ export async function importExcelBuffer(buffer: Buffer, year = 2026): Promise<Im
   const plRows = XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets[plSheetName], { header: 1 });
 
   let prev = { major: "", mid: "", minor: "", counterparty: "" };
+  let pendingMajor: string | null = null;
   const acctList: (typeof accounts.$inferInsert)[] = [];
   const acctKeySet = new Set<string>();
   type EntryRow = {
@@ -87,16 +88,26 @@ export async function importExcelBuffer(buffer: Buffer, year = 2026): Promise<Im
 
   for (const raw of plRows.slice(3) as unknown[][]) {
     if (!raw) continue;
+    const b1 = str(raw[1]);
     const major = str(raw[2]);
     const mid = str(raw[3]);
     const minor = str(raw[4]);
     const counterparty = str(raw[5]);
     const detail = str(raw[6]);
 
-    if (major) prev = { major, mid: "", minor: "", counterparty: "" };
-    else if (mid) { prev.mid = mid; prev.minor = ""; prev.counterparty = ""; }
-    else if (minor) { prev.minor = minor; prev.counterparty = ""; }
-    else if (counterparty) { prev.counterparty = counterparty; }
+    if (b1 === "매출-노무비") pendingMajor = "경비";
+
+    if (major) {
+      prev = { major, mid: "", minor: "", counterparty: "" };
+      pendingMajor = null;
+    } else {
+      if (pendingMajor && prev.major !== pendingMajor) {
+        prev = { major: pendingMajor, mid: "", minor: "", counterparty: "" };
+      }
+      if (mid) { prev.mid = mid; prev.minor = ""; prev.counterparty = ""; }
+      else if (minor) { prev.minor = minor; prev.counterparty = ""; }
+      else if (counterparty) { prev.counterparty = counterparty; }
+    }
 
     if (!prev.major || !detail) continue;
 

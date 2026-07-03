@@ -29,6 +29,7 @@ export default async function Dashboard({ searchParams }: Props) {
     revenue: number;
     costOfSales: number;
     laborCost: number;
+    gyeongbi: number;
     sgaExpense: number;
     operatingProfit: number;
     operatingMargin: number;
@@ -42,7 +43,7 @@ export default async function Dashboard({ searchParams }: Props) {
   if (selectedMonth !== null) {
     const cur = plSummary.find((m) => m.month === selectedMonth);
     const prevM = plSummary.find((m) => m.month === selectedMonth - 1);
-    kpi = cur ?? { revenue: 0, costOfSales: 0, laborCost: 0, sgaExpense: 0, operatingProfit: 0, operatingMargin: 0 };
+    kpi = cur ?? { revenue: 0, costOfSales: 0, laborCost: 0, gyeongbi: 0, sgaExpense: 0, operatingProfit: 0, operatingMargin: 0 };
     kpiPrev = prevM;
     kpiLabel = `${selectedMonth}월 실적`;
   } else {
@@ -51,11 +52,12 @@ export default async function Dashboard({ searchParams }: Props) {
         revenue: acc.revenue + m.revenue,
         costOfSales: acc.costOfSales + m.costOfSales,
         laborCost: acc.laborCost + m.laborCost,
+        gyeongbi: acc.gyeongbi + m.gyeongbi,
         sgaExpense: acc.sgaExpense + m.sgaExpense,
         operatingProfit: acc.operatingProfit + m.operatingProfit,
         operatingMargin: 0,
       }),
-      { revenue: 0, costOfSales: 0, laborCost: 0, sgaExpense: 0, operatingProfit: 0, operatingMargin: 0 }
+      { revenue: 0, costOfSales: 0, laborCost: 0, gyeongbi: 0, sgaExpense: 0, operatingProfit: 0, operatingMargin: 0 }
     );
     ytd.operatingMargin = ytd.revenue > 0 ? (ytd.operatingProfit / ytd.revenue) * 100 : 0;
     kpi = ytd;
@@ -72,6 +74,7 @@ export default async function Dashboard({ searchParams }: Props) {
     매출: Math.round(m.revenue / 1000),
     매출원가: Math.round(m.costOfSales / 1000),
     노무비: Math.round(m.laborCost / 1000),
+    경비: Math.round(m.gyeongbi / 1000),
     판관비: Math.round(m.sgaExpense / 1000),
     영업이익: Math.round(m.operatingProfit / 1000),
   }));
@@ -82,6 +85,7 @@ export default async function Dashboard({ searchParams }: Props) {
       month: `${m.month}월`,
       매출원가율: +((m.costOfSales / rev) * 100).toFixed(1),
       노무비율: +((m.laborCost / rev) * 100).toFixed(1),
+      경비율: +((m.gyeongbi / rev) * 100).toFixed(1),
       판관비율: +((m.sgaExpense / rev) * 100).toFixed(1),
       영업이익률: +((m.operatingProfit / rev) * 100).toFixed(1),
     };
@@ -91,6 +95,7 @@ export default async function Dashboard({ searchParams }: Props) {
     { label: "매출", value: isYtd ? kpi.revenue : (refData?.revenue ?? 0), cost: false },
     { label: "매출원가", value: isYtd ? kpi.costOfSales : (refData?.costOfSales ?? 0), cost: true },
     { label: "노무비", value: isYtd ? kpi.laborCost : (refData?.laborCost ?? 0), cost: true },
+    { label: "경비", value: isYtd ? kpi.gyeongbi : (refData?.gyeongbi ?? 0), cost: true },
     { label: "판관비", value: isYtd ? kpi.sgaExpense : (refData?.sgaExpense ?? 0), cost: true },
     { label: "영업이익", value: isYtd ? kpi.operatingProfit : (refData?.operatingProfit ?? 0), cost: false },
   ];

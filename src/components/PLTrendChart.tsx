@@ -10,6 +10,7 @@ export type PLChartData = {
   매출: number;
   매출원가: number;
   노무비: number;
+  경비: number;
   판관비: number;
   영업이익: number;
 };
@@ -18,6 +19,7 @@ const COLORS = {
   매출: "#2563EB",
   매출원가: "#DC2626",
   노무비: "#EA580C",
+  경비: "#D97706",
   판관비: "#CA8A04",
   영업이익: "#16A34A",
 };
@@ -66,6 +68,7 @@ export function PLTrendChart({ data, selectedMonth }: { data: PLChartData[]; sel
         )}
         <Bar dataKey="매출원가" stackId="cost" fill={COLORS.매출원가} />
         <Bar dataKey="노무비" stackId="cost" fill={COLORS.노무비} />
+        <Bar dataKey="경비" stackId="cost" fill={COLORS.경비} />
         <Bar dataKey="판관비" stackId="cost" fill={COLORS.판관비} radius={[3, 3, 0, 0]} />
         <Line dataKey="매출" stroke={COLORS.매출} strokeWidth={2.5} dot={{ r: 4 }} type="monotone" />
         <Line dataKey="영업이익" stroke={COLORS.영업이익} strokeWidth={2.5} dot={{ r: 4 }} type="monotone" strokeDasharray="6 3" />

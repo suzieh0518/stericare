@@ -70,6 +70,8 @@ async function main() {
 
   // 계층 carry-forward 상태
   let prev = { major: "", mid: "", minor: "", counterparty: "" };
+  // 엑셀 B열("매출-노무비" 마커) 기준으로 경비 섹션 감지
+  let pendingMajor: string | null = null;
 
   const acctMap = new Map<string, typeof schema.accounts.$inferInsert>();
   type EntryRow = {
@@ -84,24 +86,26 @@ async function main() {
   for (const raw of plRows.slice(3) as unknown[][]) {
     if (!raw) continue;
 
+    const b1 = str(raw[1]); // B열: 섹션 구분 라벨
     const major = str(raw[2]);
     const mid = str(raw[3]);
     const minor = str(raw[4]);
     const counterparty = str(raw[5]);
     const detail = str(raw[6]);
 
-    // 상위 카테고리 변경 시 하위 초기화
+    // B열 "매출-노무비" → 이후 C열 없는 행들은 경비 섹션
+    if (b1 === "매출-노무비") pendingMajor = "경비";
+
     if (major) {
       prev = { major, mid: "", minor: "", counterparty: "" };
-    } else if (mid) {
-      prev.mid = mid;
-      prev.minor = "";
-      prev.counterparty = "";
-    } else if (minor) {
-      prev.minor = minor;
-      prev.counterparty = "";
-    } else if (counterparty) {
-      prev.counterparty = counterparty;
+      pendingMajor = null;
+    } else {
+      if (pendingMajor && prev.major !== pendingMajor) {
+        prev = { major: pendingMajor, mid: "", minor: "", counterparty: "" };
+      }
+      if (mid) { prev.mid = mid; prev.minor = ""; prev.counterparty = ""; }
+      else if (minor) { prev.minor = minor; prev.counterparty = ""; }
+      else if (counterparty) { prev.counterparty = counterparty; }
     }
 
     // 상세내역 없는 행(카테고리 헤더/소계) 스킵

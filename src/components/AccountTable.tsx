@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { fmtKRW } from "@/lib/format";
 import type { AccountDetail } from "@/lib/queries";
 
-const CATEGORIES = ["전체", "매출", "매출원가", "노무비", "판관비", "섬유자산", "자산"];
+const CATEGORIES = ["전체", "매출", "매출원가", "노무비", "경비", "판관비", "섬유자산", "자산"];
 const MONTHS = [1, 2, 3, 4, 5];
 
 type Props = { data: AccountDetail[]; selectedMonth?: number | null };
