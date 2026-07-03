@@ -93,11 +93,13 @@ export async function importExcelBuffer(buffer: Buffer, year = 2026): Promise<Im
     const counterparty = str(raw[5]);
     const detail = str(raw[6]);
 
-    if (major) {
-      prev = { major, mid: "", minor: "", counterparty: "" };
+    if (major && major !== prev.major) {
+      // 대분류가 바뀌면 하위 계층 리셋 후 동일 행의 중분류/소분류 적용
+      prev = { major, mid: mid ?? "", minor: minor ?? "", counterparty: counterparty ?? "" };
     } else {
-      if (mid) { prev.mid = mid; prev.minor = ""; prev.counterparty = ""; }
-      else if (minor) { prev.minor = minor; prev.counterparty = ""; }
+      // 대분류 동일(또는 빈 셀) — 아래 계층만 carry-forward
+      if (mid) { prev.mid = mid; prev.minor = minor ?? ""; prev.counterparty = counterparty ?? ""; }
+      else if (minor) { prev.minor = minor; prev.counterparty = counterparty ?? ""; }
       else if (counterparty) { prev.counterparty = counterparty; }
     }
 
