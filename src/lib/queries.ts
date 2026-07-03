@@ -111,7 +111,7 @@ export async function getAccountDetails(year: number): Promise<AccountDetail[]> 
     }
     const acc = accMap.get(row.id)!;
     const v = Number(row.amount);
-    acc.months[row.month] = v;
+    acc.months[row.month] = (acc.months[row.month] ?? 0) + v;
     acc.yearTotal += v;
   }
 

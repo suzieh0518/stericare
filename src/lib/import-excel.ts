@@ -98,9 +98,16 @@ export async function importExcelBuffer(buffer: Buffer, year = 2026): Promise<Im
       prev = { major, mid: mid ?? "", minor: minor ?? "", counterparty: counterparty ?? "" };
     } else {
       // 대분류 동일(또는 빈 셀) — 아래 계층만 carry-forward
-      if (mid) { prev.mid = mid; prev.minor = minor ?? ""; prev.counterparty = counterparty ?? ""; }
-      else if (minor) { prev.minor = minor; prev.counterparty = counterparty ?? ""; }
-      else if (counterparty) { prev.counterparty = counterparty; }
+      // counterparty가 null이면 이전 값 유지 (빈 셀 = 동일 거래처)
+      if (mid) {
+        prev.mid = mid; prev.minor = minor ?? "";
+        if (counterparty !== null) prev.counterparty = counterparty;
+      } else if (minor) {
+        prev.minor = minor;
+        if (counterparty !== null) prev.counterparty = counterparty;
+      } else if (counterparty) {
+        prev.counterparty = counterparty;
+      }
     }
 
     if (!prev.major || !detail) continue;

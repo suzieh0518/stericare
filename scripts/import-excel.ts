@@ -95,9 +95,16 @@ async function main() {
       prev = { major, mid: mid ?? "", minor: minor ?? "", counterparty: counterparty ?? "" };
     } else {
       // 대분류 동일(또는 빈 셀) — 아래 계층만 carry-forward
-      if (mid) { prev.mid = mid; prev.minor = minor ?? ""; prev.counterparty = counterparty ?? ""; }
-      else if (minor) { prev.minor = minor; prev.counterparty = counterparty ?? ""; }
-      else if (counterparty) { prev.counterparty = counterparty; }
+      // counterparty가 null이면 이전 값 유지 (빈 셀 = 동일 거래처)
+      if (mid) {
+        prev.mid = mid; prev.minor = minor ?? "";
+        if (counterparty !== null) prev.counterparty = counterparty;
+      } else if (minor) {
+        prev.minor = minor;
+        if (counterparty !== null) prev.counterparty = counterparty;
+      } else if (counterparty) {
+        prev.counterparty = counterparty;
+      }
     }
 
     // 상세내역 없는 행(카테고리 헤더/소계) 스킵
