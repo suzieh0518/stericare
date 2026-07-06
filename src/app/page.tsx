@@ -6,6 +6,7 @@ import { PLTrendChart, type PLChartData } from "@/components/PLTrendChart";
 import { RevenueRatioChart, type RatioChartData } from "@/components/RevenueRatioChart";
 import { AccountTable } from "@/components/AccountTable";
 import { MonthSelector } from "@/components/MonthSelector";
+import { MidCategoryPieCharts, type MidBreakdownData } from "@/components/MidCategoryPieCharts";
 
 const YEAR = 2026;
 
@@ -96,6 +97,26 @@ export default async function Dashboard({ searchParams }: Props) {
   ];
 
   const categoryBase = categoryRows[0].value || 1;
+
+  // 중분류 파이차트 데이터
+  const midChartData: MidBreakdownData[] = ["노무비", "판관비"].map((major) => {
+    const midMap: Record<string, number> = {};
+    for (const acc of accountDetails) {
+      if (acc.majorCategory !== major) continue;
+      const mid = acc.midCategory ?? "(미분류)";
+      const v = selectedMonth !== null
+        ? (acc.months[selectedMonth] ?? 0)
+        : acc.yearTotal;
+      midMap[mid] = (midMap[mid] ?? 0) + v;
+    }
+    return {
+      major,
+      slices: Object.entries(midMap)
+        .filter(([, v]) => v > 0)
+        .sort((a, b) => b[1] - a[1])
+        .map(([name, value]) => ({ name, value })),
+    };
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -218,6 +239,14 @@ export default async function Dashboard({ searchParams }: Props) {
             </div>
           </section>
         </div>
+
+        {/* 중분류 파이차트 */}
+        <section>
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+            비용 중분류 구성
+          </h2>
+          <MidCategoryPieCharts data={midChartData} />
+        </section>
 
         {/* 계정별 상세 */}
         <section className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
