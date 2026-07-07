@@ -16,7 +16,7 @@ export type PLChartData = {
 
 const COLORS = {
   매출: "#2563EB",
-  매출원가: "#DC2626",
+  매출원가: "#FACC15",
   노무비: "#EA580C",
   판관비: "#CA8A04",
   영업이익: "#16A34A",
